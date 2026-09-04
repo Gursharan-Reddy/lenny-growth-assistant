@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+backend/venv/
+.pnp
+.pnp.js
+
+# Testing / Build outputs
+.next/
+dist/
+build/
+backend/app/__pycache__/
+backend/__pycache__/
+**/__pycache__/
+
+# Environment & Secret files
+.env
+.env.local
+.env.development.local
+.env.production.local
+
+# OS Files
+.DS_Store
+Thumbs.db
