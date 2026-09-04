@@ -1,10 +1,11 @@
+# backend/app/providers/gemini_provider.py
 import os
 from typing import AsyncGenerator, List, Dict
 from google import genai
 from .base import BaseLLMProvider
 
 class GeminiProvider(BaseLLMProvider):
-    def __init__(self, model: str = "gemini-2.5-flash"):
+    def __init__(self, model: str = "gemini-3.6-flash"):
         self.client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
         self.model = model
 
