@@ -15,7 +15,6 @@ class GeminiProvider(BaseLLMProvider):
         system_prompt: str,
         temperature: float = 0.3
     ) -> AsyncGenerator[str, None]:
-        # Convert message history format for Gemini SDK
         contents = []
         if system_prompt:
             contents.append(f"System: {system_prompt}")
