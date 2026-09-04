@@ -9,7 +9,7 @@ from ..models import Message, ChatSession
 from ..providers.gemini_provider import GeminiProvider
 import os
 
-router = APIRouter(prefix="/api/chat", tags=["Chat"])
+router = APIRouter(prefix="/chat", tags=["Chat"])
 
 class ChatRequest(BaseModel):
     session_id: str
