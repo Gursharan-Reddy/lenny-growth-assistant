@@ -3,9 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from ..database import get_db
-from ..models import Message, ChatSession
+from ..models import Message
 from ..providers.gemini_provider import GeminiProvider
 import os
 
@@ -27,13 +26,11 @@ async def chat_endpoint(req: ChatRequest, db: AsyncSession = Depends(get_db)):
     except Exception:
         await db.rollback()
 
-    # 2. Generate response from LLM (with fallback if key is missing/invalid)
     response_text = ""
     sources = [
         {"title": "Ep. 84: Navigating Product-Led Growth", "author": "Elena Verna"},
         {"title": "Ep. 112: Building High-Retention Loops", "author": "Amritashis Chatterjee"}
     ]
-    
     artifact = None
 
     try:
@@ -53,12 +50,12 @@ async def chat_endpoint(req: ChatRequest, db: AsyncSession = Depends(get_db)):
                 "type": "markdown"
             }
         else:
-            llm = GeminiProvider()
+            llm = GeminiProvider(model="gemini-3.6-flash")
             system_prompt = "You are The Lenny Growth Assistant, an elite product and growth advisor grounded in Lenny's Podcast insights. Format responses cleanly with bold text and structured bullet points."
             async for chunk in llm.generate_response([{"role": "user", "content": req.message}], system_prompt):
                 response_text += chunk
     except Exception as e:
-        response_text = f"Analyzed query successfully. Framework guidance: Focus on reducing time-to-value and optimizing activation loops. (Note: LLM provider warning - {str(e)})"
+        response_text = f"Based on growth frameworks from Lenny's Podcast, prioritize reducing Time-to-Value and optimizing activation loops. (API Note: {str(e)})"
 
     # 3. Save assistant message
     try:
