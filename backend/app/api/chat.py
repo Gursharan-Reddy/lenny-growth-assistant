@@ -1,7 +1,7 @@
 # backend/app/api/chat.py
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
+from typing import Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..database import get_db
 from ..models import Message
@@ -18,7 +18,6 @@ class ChatRequest(BaseModel):
 
 @router.post("")
 async def chat_endpoint(req: ChatRequest, db: AsyncSession = Depends(get_db)):
-    # 1. Save user message
     try:
         user_msg = Message(session_id=req.session_id, role="user", content=req.message)
         db.add(user_msg)
@@ -52,12 +51,10 @@ async def chat_endpoint(req: ChatRequest, db: AsyncSession = Depends(get_db)):
         else:
             llm = GeminiProvider(model="gemini-3.6-flash")
             system_prompt = "You are The Lenny Growth Assistant, an elite product and growth advisor grounded in Lenny's Podcast insights. Format responses cleanly with bold text and structured bullet points."
-            async for chunk in llm.generate_response([{"role": "user", "content": req.message}], system_prompt):
-                response_text += chunk
+            response_text = await llm.generate_response([{"role": "user", "content": req.message}], system_prompt)
     except Exception as e:
         response_text = f"Based on growth frameworks from Lenny's Podcast, prioritize reducing Time-to-Value and optimizing activation loops. (API Note: {str(e)})"
 
-    # 3. Save assistant message
     try:
         asst_msg = Message(session_id=req.session_id, role="assistant", content=response_text, sources=sources)
         db.add(asst_msg)
