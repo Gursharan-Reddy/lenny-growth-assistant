@@ -52,8 +52,8 @@ async def chat_endpoint(req: ChatRequest, db: AsyncSession = Depends(get_db)):
             llm = GeminiProvider(model="gemini-3.6-flash")
             system_prompt = "You are The Lenny Growth Assistant, an elite product and growth advisor grounded in Lenny's Podcast insights. Format responses cleanly with bold text and structured bullet points."
             
-            async for chunk in llm.generate_response([{"role": "user", "content": req.message}], system_prompt):
-                response_text += chunk
+            # Directly await the non-streaming response for instant execution
+            response_text = await llm.generate_response([{"role": "user", "content": req.message}], system_prompt)
     except Exception as e:
         response_text = f"Based on growth frameworks from Lenny's Podcast, prioritize reducing Time-to-Value and optimizing activation loops. (API Note: {str(e)})"
 
